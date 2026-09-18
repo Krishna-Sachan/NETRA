@@ -1,0 +1,12 @@
+CALL DETAIL RECORD & FINANCIAL INTELLIGENCE ANALYSIS REPORT
+Ref Doc: DOC-CDR-904 | Date of Compilation: 28-Feb-2025
+Issuing Authority: Financial Intelligence Unit (FIU-IND) & NTRO Interception Wing
+
+1. INTERCEPT SUMMARY & PHONE NETWORK TRAIL:
+Analysis of CDR logs for target phone +91-98740-11223 (registered under alias Ankur "Vicky" Roy) reveals high-frequency nocturnal call spikes (42 calls between 01:00 hrs and 04:30 hrs) to satellite handset +91-98311-00492 used by contraband operative Bikram Biswas.
+
+2. CROSS-BORDER HAWALA TRANSACTIONS:
+FIU audit flagged structured cash deposits amounting to Rs 24,00,000 across 6 accounts at Metro Co-operative Bank. Wire transfers originated from account held by Subhash "Bhai" Nayak at Haldia Docks and were routed to shell firm Apex Freight Forwarders Pvt Ltd.
+
+3. OPERATIONAL LINKAGES & VEHICLE LOGISTICS:
+Vehicle surveillance log verified pickup truck WB-74-C-5521 driven by Harun Mollah staged at Lalbagh River Dock. Mollah received direct routing instructions from Jayanta Das via phone +91-94321-44521.

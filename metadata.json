@@ -1,0 +1,6 @@
+{
+  "name": "NETRA — Criminal Network Intelligence",
+  "description": "AI-powered criminal network intelligence dashboard and decision-support prototype for law enforcement investigation analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
