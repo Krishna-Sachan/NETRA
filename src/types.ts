@@ -213,6 +213,7 @@ export interface TimelineMilestone {
   involvedEntityIds: string[];
   documentId?: string;
   evidenceSnippet?: string;
+  narrativeStory?: string;
 }
 
 // ==========================================

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CaseDocument, DocumentType } from '../types';
+import { InfoTooltip } from './InfoTooltip';
 
 interface CaseFilesPaneProps {
   documents: CaseDocument[];
@@ -46,6 +47,12 @@ export const CaseFilesPane: React.FC<CaseFilesPaneProps> = ({
           <h2 className="text-xs font-bold tracking-wider text-slate-800 uppercase font-sans">
             Case Evidence Files
           </h2>
+          <InfoTooltip
+            title="Case Evidence Dossiers"
+            description="Manages all ingested FIRs, CDR transcripts, bank audits, and intelligence notes for the active case."
+            howToUse="Click any document card to read full text, view SHA-256 tamper-proof hash, or re-run entity extraction."
+            variant="highlight"
+          />
           <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#e3dcd0] text-slate-700 border border-[#d5cebf]">
             {filteredDocs.length}
           </span>

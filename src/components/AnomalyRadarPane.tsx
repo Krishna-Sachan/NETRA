@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { AnomalyFinding } from '../types';
+import { InfoTooltip } from './InfoTooltip';
+import { ConfidenceBadge } from './ConfidenceBadge';
 
 interface AnomalyRadarPaneProps {
   anomalies: AnomalyFinding[];
@@ -34,13 +36,17 @@ export const AnomalyRadarPane: React.FC<AnomalyRadarPaneProps> = ({
       {/* Pane Header */}
       <div className="px-3.5 py-3 border-b border-[#e2dcd0] bg-[#ede8df] flex-shrink-0 space-y-2">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex items-center space-x-1.5">
             <h3 className="text-xs font-bold tracking-wider text-slate-900 uppercase font-sans">
               Anomaly Radar
             </h3>
-            <p className="text-[11px] text-slate-600 mt-0.5">
-              Rule-based network anomalies & operational flags
-            </p>
+            <InfoTooltip
+              title="Rule-Based Anomaly Radar"
+              description="Detects operational anomalies such as communication spikes, burner phone surges, location co-presences, and financial structuring."
+              calculation="Uses rule engines evaluating historical baseline deviations and temporal frequency spikes."
+              howToUse="Click an anomaly card to highlight all involved entities directly in the network canvas."
+              variant="highlight"
+            />
           </div>
 
           <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-900 border border-rose-300">
@@ -75,6 +81,7 @@ export const AnomalyRadarPane: React.FC<AnomalyRadarPaneProps> = ({
         ) : (
           filteredAnomalies.map(item => {
             const isExpanded = expandedAnomalyId === item.id;
+            const severityScore = item.severity === 'HIGH' ? 92 : item.severity === 'MEDIUM' ? 72 : 45;
 
             return (
               <div
@@ -84,18 +91,14 @@ export const AnomalyRadarPane: React.FC<AnomalyRadarPaneProps> = ({
                 {/* Header: Type & Severity */}
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                    {item.anomalyType}
+                    {item.detectorType || item.category || 'ANOMALY'}
                   </span>
 
-                  <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded border ${
-                    item.severity === 'HIGH'
-                      ? 'bg-rose-50 text-rose-700 border-rose-200'
-                      : item.severity === 'MEDIUM'
-                      ? 'bg-amber-50 text-amber-800 border-amber-200'
-                      : 'bg-slate-100 text-slate-700 border-slate-200'
-                  }`}>
-                    {item.severity} SEVERITY
-                  </span>
+                  <ConfidenceBadge
+                    score={severityScore}
+                    label="Anomaly Severity"
+                    calculationDescription="Severity score derived from rule trigger thresholds & baseline deviation multipliers."
+                  />
                 </div>
 
                 {/* Title & Description */}

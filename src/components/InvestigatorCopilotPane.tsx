@@ -24,6 +24,7 @@ import {
 import { askInvestigatorCopilot } from '../services/gemini';
 import { recordAuditEvent } from '../services/auditService';
 import { getDisplayLabel, maskSnippetSensitiveValues, maskSensitiveField } from '../services/accessPolicy';
+import { InfoTooltip } from './InfoTooltip';
 import { 
   Bot, 
   Send, 
@@ -229,11 +230,19 @@ export const InvestigatorCopilotPane: React.FC<InvestigatorCopilotPaneProps> = (
   return (
     <div className="flex flex-col h-full bg-[#0c101a] text-slate-200 overflow-hidden text-xs font-sans">
       {/* Statutory Legal Disclaimer Banner */}
-      <div className="px-3.5 py-2 bg-[#121826] border-b border-slate-800 text-[11px] text-slate-400 flex items-center space-x-2 flex-shrink-0">
-        <Info className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
-        <span className="leading-snug text-slate-300">
-          <strong className="text-white">Statutory Notice:</strong> AI outputs require investigator validation and are not determinations of guilt.
-        </span>
+      <div className="px-3.5 py-2 bg-[#121826] border-b border-slate-800 text-[11px] text-slate-400 flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center space-x-2">
+          <Info className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
+          <span className="leading-snug text-slate-300">
+            <strong className="text-white">Statutory Notice:</strong> AI outputs require investigator validation and are not determinations of guilt.
+          </span>
+        </div>
+        <InfoTooltip
+          title="Grounded Investigator Copilot"
+          description="RAG-powered conversational assistant strictly anchored to active case documents. Prevents prompt injection and never asserts legal guilt."
+          howToUse="Ask any investigative question (e.g. 'How is Vikram Sharma connected to Tariq Merchant?')."
+          variant="highlight"
+        />
       </div>
 
       {/* Chat Messages Log */}

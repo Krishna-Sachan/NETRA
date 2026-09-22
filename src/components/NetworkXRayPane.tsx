@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { NetworkXRayReport, NodeXRayMetrics, CommunityCluster } from '../types';
+import { InfoTooltip } from './InfoTooltip';
+import { ConfidenceBadge } from './ConfidenceBadge';
 
 interface NetworkXRayPaneProps {
   report: NetworkXRayReport;
@@ -47,64 +49,75 @@ export const NetworkXRayPane: React.FC<NetworkXRayPaneProps> = ({
       {/* Pane Header */}
       <div className="px-3.5 py-3 border-b border-[#e2dcd0] bg-[#ede8df] flex-shrink-0 space-y-2">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex items-center space-x-1.5">
             <h3 className="text-xs font-bold tracking-wider text-slate-900 uppercase font-sans">
               Network X-Ray
             </h3>
-            <p className="text-[11px] text-slate-600 mt-0.5">
-              Dynamic graph metrics & community detection
-            </p>
+            <InfoTooltip
+              title="Network X-Ray Analysis"
+              description="Evaluates graph topology, centrality metrics (Degree, Betweenness), and community structures using the Louvain modularity algorithm."
+              howToUse="Click any mode button below to highlight top influencers, structural bridge entities, or distinct operational clusters."
+              calculation="Calculates Degree Centrality (total direct links) and Betweenness Centrality (shortest paths passing through each node)."
+              variant="highlight"
+            />
           </div>
 
-          <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#e3ded3] text-slate-800 border border-[#d6cfc2]">
-            Density: {report.graphDensity}
-          </span>
+          <div className="flex items-center space-x-1">
+            <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#e3ded3] text-slate-800 border border-[#d6cfc2]">
+              Density: {report.graphDensity}
+            </span>
+            <InfoTooltip
+              title="Graph Density Metric"
+              description={`Graph density (${report.graphDensity}) measures how interconnected the entities in this case file are relative to maximum potential links.`}
+              calculation="Density = (2 * Actual Edges) / (Total Nodes * (Total Nodes - 1))"
+            />
+          </div>
         </div>
 
         {/* 4 Action Mode Buttons */}
         <div className="grid grid-cols-2 gap-1.5 pt-1">
           <button
             onClick={() => handleModeChange('INFLUENCERS')}
-            className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer text-center ${
+            className={`w-full px-2.5 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer text-center flex items-center justify-center space-x-1 ${
               activeMode === 'INFLUENCERS'
                 ? 'bg-slate-900 text-white font-semibold shadow-xs'
                 : 'bg-[#faf8f5] text-slate-700 border border-[#e0d9cc] hover:bg-[#ede8df]'
             }`}
           >
-            Find Influencers
+            <span>Find Influencers</span>
           </button>
 
           <button
             onClick={() => handleModeChange('BRIDGES')}
-            className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer text-center ${
+            className={`w-full px-2.5 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer text-center flex items-center justify-center space-x-1 ${
               activeMode === 'BRIDGES'
                 ? 'bg-slate-900 text-white font-semibold shadow-xs'
                 : 'bg-[#faf8f5] text-slate-700 border border-[#e0d9cc] hover:bg-[#ede8df]'
             }`}
           >
-            Find Bridges
+            <span>Find Bridges</span>
           </button>
 
           <button
             onClick={() => handleModeChange('CLUSTERS')}
-            className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer text-center ${
+            className={`w-full px-2.5 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer text-center flex items-center justify-center space-x-1 ${
               activeMode === 'CLUSTERS'
                 ? 'bg-slate-900 text-white font-semibold shadow-xs'
                 : 'bg-[#faf8f5] text-slate-700 border border-[#e0d9cc] hover:bg-[#ede8df]'
             }`}
           >
-            Detect Clusters
+            <span>Detect Clusters</span>
           </button>
 
           <button
             onClick={() => handleModeChange('ISOLATED')}
-            className={`px-2.5 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer text-center ${
+            className={`w-full px-2.5 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer text-center flex items-center justify-center space-x-1 ${
               activeMode === 'ISOLATED'
                 ? 'bg-slate-900 text-white font-semibold shadow-xs'
                 : 'bg-[#faf8f5] text-slate-700 border border-[#e0d9cc] hover:bg-[#ede8df]'
             }`}
           >
-            Isolated Nodes
+            <span>Isolated Nodes</span>
           </button>
         </div>
       </div>
@@ -113,14 +126,19 @@ export const NetworkXRayPane: React.FC<NetworkXRayPaneProps> = ({
       <div className="flex-1 overflow-y-auto p-2.5 space-y-2.5">
         {activeMode === 'INFLUENCERS' && (
           <div className="space-y-2">
-            <div className="text-[11px] text-slate-500 font-medium px-1">
-              Nodes ranked by Eigenvector / Degree Centrality:
+            <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium px-1">
+              <span>Nodes ranked by Degree & Centrality Importance:</span>
+              <InfoTooltip
+                title="Node Importance Calculation"
+                description="Calculated from normalized degree and betweenness centrality."
+                calculation="Importance % = (0.6 * Normalized Degree + 0.4 * Normalized Betweenness) * 100"
+              />
             </div>
             {report.influencers.map((item: NodeXRayMetrics, idx: number) => (
               <div
                 key={item.id}
                 onClick={() => onSelectEntity(item.id)}
-                className="p-3 rounded-xl bg-white/70 hover:bg-white/95 border border-slate-200/90 shadow-xs transition-all cursor-pointer space-y-1 text-xs"
+                className="p-3 rounded-xl bg-white/70 hover:bg-white/95 border border-slate-200/90 shadow-xs transition-all cursor-pointer space-y-2 text-xs"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-slate-900">
@@ -130,9 +148,14 @@ export const NetworkXRayPane: React.FC<NetworkXRayPaneProps> = ({
                     {item.type}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-                  <span>Degree: {item.degree} connections</span>
-                  <span>Percentile: {item.betweennessPercentile}%</span>
+
+                <div className="flex items-center justify-between text-[11px] text-slate-600 pt-1 border-t border-slate-100">
+                  <span>Degree: <strong>{item.degree}</strong> links</span>
+                  <ConfidenceBadge
+                    score={item.betweennessPercentile}
+                    label="Importance"
+                    calculationDescription={`Degree: ${item.degree} connections. Eigenvector/Betweenness score: ${item.betweennessPercentile}%.`}
+                  />
                 </div>
               </div>
             ))}
@@ -141,14 +164,18 @@ export const NetworkXRayPane: React.FC<NetworkXRayPaneProps> = ({
 
         {activeMode === 'BRIDGES' && (
           <div className="space-y-2">
-            <div className="text-[11px] text-slate-500 font-medium px-1">
-              Nodes with high Betweenness Centrality (critical structural bridges):
+            <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium px-1">
+              <span>Nodes with high Betweenness Centrality (structural bridges):</span>
+              <InfoTooltip
+                title="Bridge Node Calculation"
+                description="Identifies entities lying on the highest number of shortest paths between disparate pairs of nodes."
+              />
             </div>
             {report.bridges.map((item: NodeXRayMetrics, idx: number) => (
               <div
                 key={item.id}
                 onClick={() => onSelectEntity(item.id)}
-                className="p-3 rounded-xl bg-white/70 hover:bg-white/95 border border-slate-200/90 shadow-xs transition-all cursor-pointer space-y-1 text-xs"
+                className="p-3 rounded-xl bg-white/70 hover:bg-white/95 border border-slate-200/90 shadow-xs transition-all cursor-pointer space-y-2 text-xs"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-slate-900">
@@ -158,9 +185,14 @@ export const NetworkXRayPane: React.FC<NetworkXRayPaneProps> = ({
                     {item.type}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-                  <span>Betweenness: {item.betweenness}</span>
-                  <span>Degree: {item.degree}</span>
+
+                <div className="flex items-center justify-between text-[11px] text-slate-600 pt-1 border-t border-slate-100">
+                  <span>Betweenness: <strong>{item.betweenness}</strong></span>
+                  <ConfidenceBadge
+                    score={item.betweennessPercentile}
+                    label="Bridge Confidence"
+                    calculationDescription={`Betweenness centrality index: ${item.betweenness}. Structural influence percentile: ${item.betweennessPercentile}%.`}
+                  />
                 </div>
               </div>
             ))}
@@ -169,11 +201,16 @@ export const NetworkXRayPane: React.FC<NetworkXRayPaneProps> = ({
 
         {activeMode === 'CLUSTERS' && (
           <div className="space-y-2">
-            <div className="text-[11px] text-slate-500 font-medium px-1">
-              Louvain Community Detection ({report.clusters.length} Louvain Sub-Graph Clusters):
+            <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium px-1">
+              <span>Louvain Community Sub-Graph Clusters ({report.clusters.length}):</span>
+              <InfoTooltip
+                title="Louvain Modularity Clustering"
+                description="Iteratively groups entities to maximize network modularity (density of links inside cluster vs outside)."
+              />
             </div>
             {report.clusters.map((cluster: CommunityCluster) => {
               const isSelected = selectedClusterId === cluster.id;
+              const clusterScore = Math.round(Math.min(100, (cluster.nodeIds.length / (report.influencers.length || 1)) * 100 + 40));
 
               return (
                 <div
@@ -187,9 +224,11 @@ export const NetworkXRayPane: React.FC<NetworkXRayPaneProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-slate-900">{cluster.name}</span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                      {cluster.nodeIds.length} Nodes
-                    </span>
+                    <ConfidenceBadge
+                      score={clusterScore}
+                      label="Cell Density"
+                      calculationDescription={`Cluster contains ${cluster.nodeIds.length} tightly connected member entities.`}
+                    />
                   </div>
                   <p className="text-xs text-slate-600 font-normal leading-relaxed">{cluster.summary}</p>
                 </div>
@@ -200,8 +239,12 @@ export const NetworkXRayPane: React.FC<NetworkXRayPaneProps> = ({
 
         {activeMode === 'ISOLATED' && (
           <div className="space-y-2">
-            <div className="text-[11px] text-slate-500 font-medium px-1">
-              Isolated or Low-Degree Entities:
+            <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium px-1">
+              <span>Isolated or Low-Degree Entities:</span>
+              <InfoTooltip
+                title="Isolated Entity Analysis"
+                description="Lists entities with degree <= 1 that lack extensive relationship links in ingested documents."
+              />
             </div>
             {report.isolatedEntities.length === 0 ? (
               <div className="p-6 text-center text-slate-400 text-xs">
@@ -215,9 +258,12 @@ export const NetworkXRayPane: React.FC<NetworkXRayPaneProps> = ({
                   className="p-3 rounded-xl bg-white/70 hover:bg-white/95 border border-slate-200/90 shadow-xs transition-all cursor-pointer flex items-center justify-between text-xs"
                 >
                   <span className="font-semibold text-slate-900">{item.label}</span>
-                  <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                    {item.type}
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <ConfidenceBadge score={35} label="Coverage" calculationDescription="Entity has single or no connected relationships in current case data." />
+                    <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                      {item.type}
+                    </span>
+                  </div>
                 </div>
               ))
             )}

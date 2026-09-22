@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Entity, Relationship, EntityType, CaseDocument, UserRole } from '../types';
 import { TimelineBar } from './TimelineBar';
+import { InfoTooltip } from './InfoTooltip';
 import { normalizeDate } from '../services/timelineService';
 import { getDisplayLabel } from '../services/accessPolicy';
 
@@ -527,13 +528,18 @@ export const CrimeNetworkPane: React.FC<CrimeNetworkPaneProps> = ({
       <div className="h-12 border-b border-slate-800/80 px-3.5 bg-[#0b0f19]/90 backdrop-blur-xl flex items-center justify-between z-10 select-none text-slate-200">
         {/* Left: Search Bar */}
         <div className="flex items-center space-x-2">
-          <form onSubmit={handleSearch} className="relative">
+          <form onSubmit={handleSearch} className="relative flex items-center space-x-1">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Locate entity..."
               className="bg-[#131927] border border-slate-700/80 rounded-lg px-3 py-1 text-xs text-slate-100 placeholder-slate-500 w-44 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500 shadow-xs font-sans transition-all"
+            />
+            <InfoTooltip
+              title="Entity Locator Search"
+              description="Searches for suspect names, phone numbers, vehicle plates, or aliases in the crime canvas."
+              howToUse="Type a name or phone number and press Enter to instantly center and zoom on that entity."
             />
           </form>
         </div>
@@ -555,6 +561,11 @@ export const CrimeNetworkPane: React.FC<CrimeNetworkPaneProps> = ({
                 {l === 'cose' ? 'Force' : l === 'breadthfirst' ? 'Tree' : l.charAt(0).toUpperCase() + l.slice(1)}
               </button>
             ))}
+            <InfoTooltip
+              title="Graph Layout Algorithms"
+              description="Changes the mathematical graph layout (Force/Physics, Concentric ring, Tree hierarchy, or Circle ring)."
+              calculation="Force uses physics spring simulation; Concentric places high-centrality nodes in the center ring."
+            />
           </div>
 
           <div className="h-4 w-px bg-slate-800"></div>
@@ -582,15 +593,26 @@ export const CrimeNetworkPane: React.FC<CrimeNetworkPaneProps> = ({
             >
               Fit
             </button>
+            <InfoTooltip
+              title="Canvas Zoom & Fit Controls"
+              description="Zoom in (+) or out (-), or click Fit to reset viewport scale so all graph entities fit on screen."
+            />
           </div>
         </div>
       </div>
 
       {/* Entity Type Filter Bar */}
       <div className="px-3.5 py-1.5 bg-[#0b0f19]/70 border-b border-slate-800/80 flex items-center space-x-1.5 overflow-x-auto no-scrollbar select-none z-10 text-xs font-sans">
-        <span className="text-xs font-medium text-slate-400 mr-1">
-          Filter:
-        </span>
+        <div className="flex items-center space-x-1 mr-1">
+          <span className="text-xs font-medium text-slate-400">
+            Filter:
+          </span>
+          <InfoTooltip
+            title="Entity Type Visibility Filters"
+            description="Toggle visibility of specific entity categories (Persons, Phones, Vehicles, Locations, Organizations, Events, Transactions)."
+            howToUse="Click any color pill to show or hide all nodes of that entity type on the canvas."
+          />
+        </div>
         {(Object.keys(ENTITY_CONFIG) as EntityType[]).map((type) => {
           const cfg = ENTITY_CONFIG[type];
           const isVisible = visibleTypes[type];

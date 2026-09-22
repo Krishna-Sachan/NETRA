@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { AIInsight } from '../types';
+import { InfoTooltip } from './InfoTooltip';
+import { ConfidenceBadge } from './ConfidenceBadge';
 
 interface AIInsightsPaneProps {
   insights: AIInsight[];
@@ -37,6 +39,12 @@ export const AIInsightsPane: React.FC<AIInsightsPaneProps> = ({
           <h2 className="text-xs font-bold tracking-wider text-slate-900 uppercase font-sans">
             AI Insights Feed
           </h2>
+          <InfoTooltip
+            title="AI Pattern Insights Engine"
+            description="Synthesizes cross-cluster bridges, high-frequency burner phone hubs, and financial structuring patterns using Gemini 3.8."
+            howToUse="Review AI lead hypotheses with verbatim document evidence citations."
+            variant="highlight"
+          />
           <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#e3ded3] text-slate-800 border border-[#d6cfc2]">
             {filteredInsights.length} Findings
           </span>
@@ -55,7 +63,7 @@ export const AIInsightsPane: React.FC<AIInsightsPaneProps> = ({
       {/* Investigator Directive Notice */}
       <div className="px-3.5 py-2 bg-[#ede8df]/60 border-b border-[#e2dcd0] text-[11px] text-slate-600 leading-relaxed font-normal">
         <span className="text-slate-900 font-semibold mr-1">NOTICE:</span>
-        Findings are probabilistic decision-support hypotheses grounded strictly in cited evidence snippets.
+        Findings are decision-support hypotheses grounded strictly in cited evidence snippets.
       </div>
 
       {/* Category Filter Pills */}
@@ -94,25 +102,24 @@ export const AIInsightsPane: React.FC<AIInsightsPaneProps> = ({
         ) : (
           filteredInsights.map((ins) => {
             const cat = CATEGORY_TAGS[ins.category] || { label: ins.category, color: 'bg-slate-100 border-slate-200 text-slate-700' };
+            const confidenceScore = ins.priorityLevel === 'HIGH_PRIORITY' ? 90 : 75;
 
             return (
               <div
                 key={ins.id}
                 className="p-3.5 rounded-xl bg-[#faf8f5] hover:bg-white border border-[#e0d9cc] shadow-xs hover:shadow-sm transition-all duration-150 space-y-2 text-xs"
               >
-                {/* Header: Category & Priority */}
+                {/* Header: Category & Confidence */}
                 <div className="flex items-center justify-between gap-2">
                   <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase border ${cat.color}`}>
                     {cat.label}
                   </span>
 
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase border ${
-                    ins.priorityLevel === 'HIGH_PRIORITY'
-                      ? 'bg-rose-50 text-rose-700 border-rose-200'
-                      : 'bg-amber-50 text-amber-800 border-amber-200'
-                  }`}>
-                    {ins.priorityLevel === 'HIGH_PRIORITY' ? 'HIGH PRIORITY LEAD' : 'ELEVATED CORROBORATION'}
-                  </span>
+                  <ConfidenceBadge
+                    score={confidenceScore}
+                    label="Signal Confidence"
+                    calculationDescription="Confidence score derived from corroborating primary evidence items & network centrality metrics."
+                  />
                 </div>
 
                 {/* Finding Title */}

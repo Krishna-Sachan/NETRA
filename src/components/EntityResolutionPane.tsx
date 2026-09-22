@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { DuplicateCandidate } from '../types';
+import { InfoTooltip } from './InfoTooltip';
+import { ConfidenceBadge } from './ConfidenceBadge';
 
 interface EntityResolutionPaneProps {
   candidates: DuplicateCandidate[];
@@ -32,13 +34,17 @@ export const EntityResolutionPane: React.FC<EntityResolutionPaneProps> = ({
       {/* Pane Header */}
       <div className="px-3.5 py-3 border-b border-[#e2dcd0] bg-[#ede8df] flex-shrink-0 space-y-2">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex items-center space-x-1.5">
             <h3 className="text-xs font-bold tracking-wider text-slate-900 uppercase font-sans">
               Entity Resolution
             </h3>
-            <p className="text-[11px] text-slate-600 mt-0.5">
-              Cross-document entity deduplication & resolution
-            </p>
+            <InfoTooltip
+              title="Entity Resolution & Deduplication"
+              description="Identifies potential duplicate suspect profiles, alias variations, or matching phone numbers across disparate case documents."
+              calculation="Uses Jaro-Winkler string distance and phonetic matching algorithms to compute match percentage."
+              howToUse="Review entity pairs and click Merge to combine duplicate profiles into a single canonical profile with combined evidence."
+              variant="highlight"
+            />
           </div>
 
           <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
@@ -78,9 +84,11 @@ export const EntityResolutionPane: React.FC<EntityResolutionPaneProps> = ({
             >
               {/* Header: Similarity Score */}
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
-                  {cand.similarityPercentage}% Match
-                </span>
+                <ConfidenceBadge
+                  score={cand.similarityPercentage}
+                  label="Match Confidence"
+                  calculationDescription="Jaro-Winkler similarity & shared evidence corroboration score."
+                />
                 <span className="text-[11px] text-slate-400 font-mono">{cand.id}</span>
               </div>
 

@@ -18,6 +18,8 @@ import { EvidenceDrawer } from './components/EvidenceDrawer';
 import { IngestModal } from './components/IngestModal';
 import { DocumentModal } from './components/DocumentModal';
 import { MethodologyModal } from './components/MethodologyModal';
+import { SystemGuideModal } from './components/SystemGuideModal';
+import { InfoTooltip } from './components/InfoTooltip';
 import { SAMPLE_DOCUMENTS } from './data/sampleDocuments';
 import { INITIAL_ENTITIES, INITIAL_RELATIONSHIPS, INITIAL_AI_INSIGHTS } from './data/initialGraph';
 import { 
@@ -105,6 +107,7 @@ export default function App() {
   const [selectedRelationshipId, setSelectedRelationshipId] = useState<string | null>(null);
   const [selectedDocForReading, setSelectedDocForReading] = useState<CaseDocument | null>(null);
   const [highlightedEntityIds, setHighlightedEntityIds] = useState<string[]>([]);
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
 
   // Modals
   const [isIngestOpen, setIsIngestOpen] = useState(false);
@@ -634,6 +637,7 @@ export default function App() {
         onOpenIngest={() => setIsIngestOpen(true)}
         onResetGraph={handleResetGraph}
         onOpenMethodology={() => setIsMethodologyOpen(true)}
+        onOpenGuide={() => setIsGuideModalOpen(true)}
         entityCount={entities.length}
         relationshipCount={relationships.length}
         documentCount={documents.length}
@@ -707,17 +711,16 @@ export default function App() {
             }}
             onSelectRelationship={(rel) => {
               setSelectedRelationshipId(rel ? rel.id : null);
-              if (rel) setSelectedEntityId(null);
+              if (rel) {
+                setSelectedEntityId(null);
+                recordAuditEvent({ action: 'VIEWED_EVIDENCE', role: currentRole, targetId: rel.id, targetType: 'RELATIONSHIP' });
+                setAuditEvents(getAuditEvents());
+              }
             }}
             onCutoffDateChange={(d) => setCurrentCutoffDate(d)}
-            onClearTimelineFilter={() => {
-              setTimelineRange(null);
-              setCurrentCutoffDate(null);
-              showToast('Cleared timeline filter.', 'info');
-            }}
-            onTriggerXRay={handleTriggerXRay}
+            onClearTimelineFilter={() => setTimelineRange(null)}
             onHighlightEntities={(ids) => setHighlightedEntityIds(ids)}
-            currentRole={currentRole}
+            userRole={currentRole}
           />
 
           {/* Evidence Side Drawer */}

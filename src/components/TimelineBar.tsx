@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Entity, Relationship, CaseDocument, TimelineMilestone } from '../types';
 import { buildTimelineFromCase, normalizeDate } from '../services/timelineService';
+import { TimelineSubtitleOverlay } from './TimelineSubtitleOverlay';
+import { InfoTooltip } from './InfoTooltip';
+import { Subtitles } from 'lucide-react';
 
 interface TimelineBarProps {
   documents?: CaseDocument[];
@@ -28,6 +31,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({
   const allDates = useMemo(() => milestones.map(m => m.date), [milestones]);
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showSubtitles, setShowSubtitles] = useState(true);
   const [activeMilestoneIdx, setActiveMilestoneIdx] = useState<number>(() => {
     if (!currentCutoffDate) return Math.max(0, allDates.length - 1);
     const idx = allDates.indexOf(currentCutoffDate);
@@ -47,6 +51,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({
   useEffect(() => {
     let timer: any = null;
     if (isPlaying && allDates.length > 1) {
+      setShowSubtitles(true);
       timer = setInterval(() => {
         setActiveMilestoneIdx(prev => {
           if (prev >= allDates.length - 1) {
@@ -60,7 +65,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({
           }
           return next;
         });
-      }, 2000);
+      }, 2500);
     }
     return () => {
       if (timer) clearInterval(timer);
@@ -122,18 +127,61 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({
   const isFiltered = currentCutoffDate !== null && activeMilestoneIdx < allDates.length - 1;
 
   return (
-    <div className="w-full bg-white/80 border-t border-slate-200/80 px-4 py-2.5 backdrop-blur-xl text-slate-900 select-none shadow-xs font-sans text-xs">
+    <div className="relative w-full bg-white/80 border-t border-slate-200/80 px-4 py-2.5 backdrop-blur-xl text-slate-900 select-none shadow-xs font-sans text-xs">
+      
+      {/* Floating Movie Subtitle Narrative Overlay */}
+      {showSubtitles && currentMilestone && (
+        <TimelineSubtitleOverlay
+          milestone={currentMilestone}
+          allMilestones={milestones}
+          currentIndex={activeMilestoneIdx}
+          entities={entities}
+          relationships={relationships}
+          documents={documents}
+          isPlaying={isPlaying}
+          onTogglePlay={() => setIsPlaying(!isPlaying)}
+          onStepPrev={handleStepPrev}
+          onStepNext={handleStepNext}
+          onSelectEntity={onSelectEntity}
+          onCloseSubtitle={() => setShowSubtitles(false)}
+        />
+      )}
+
       {/* Top Row: Playback Controls & Active Milestone Header */}
       <div className="flex items-center justify-between gap-3 mb-2">
         {/* Playback Controls */}
         <div className="flex items-center space-x-1.5">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="px-3 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-all cursor-pointer shadow-xs"
-            title={isPlaying ? 'Pause unfolding' : 'Play unfolding'}
+            className="px-3 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-all cursor-pointer shadow-xs flex items-center space-x-1"
+            title={isPlaying ? 'Pause unfolding' : 'Play unfolding timeline'}
           >
-            {isPlaying ? 'Pause' : 'Play'}
+            <span>{isPlaying ? 'Pause' : 'Play'}</span>
           </button>
+          <InfoTooltip
+            title="Auto-Play Reconstruction"
+            description="Automatically steps through case milestones in chronological sequence every 2.5 seconds."
+            howToUse="Click Play to watch the network graph evolve and unroll step-by-step over time."
+          />
+
+          <button
+            onClick={() => setShowSubtitles(!showSubtitles)}
+            className={`px-3 py-1 rounded-lg border text-xs font-semibold flex items-center space-x-1 transition-all cursor-pointer ${
+              showSubtitles
+                ? 'bg-[#1a2336] text-amber-300 border-amber-400/80 font-bold shadow-xs shadow-amber-500/20'
+                : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
+            }`}
+            title="Toggle Cinematic Story Mode Overlay"
+          >
+            <Subtitles className="w-3.5 h-3.5 text-amber-400" />
+            <span>{showSubtitles ? '🎬 Story Mode ON' : '🎬 Story Mode'}</span>
+          </button>
+          <InfoTooltip
+            title="Cinematic Story Mode"
+            description="Displays cinematic narrative text banners over the canvas explaining the unfolding case events."
+            howToUse="Click to turn cinematic story mode on or off during timeline scrubbing."
+            variant="amber"
+          />
 
           <button
             onClick={handleStepPrev}
@@ -160,6 +208,10 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({
           >
             {isFiltered ? `Reset (Filtering ≤ ${currentMilestone.date})` : 'Full Case View'}
           </button>
+          <InfoTooltip
+            title="Full Case View / Reset Cutoff"
+            description="Clears active date cutoff filter and restores complete baseline case network."
+          />
         </div>
 
         {/* Current Active Milestone Summary */}
@@ -183,11 +235,17 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({
               {currentMilestone.documentId}
             </span>
           )}
+
+          <InfoTooltip
+            title="Active Milestone Intel"
+            description={`Currently displaying evidence logged on ${currentMilestone.date} from document ${currentMilestone.documentId || 'Case Dossier'}.`}
+            calculation="Filters canvas to hide nodes/edges occurring strictly after this cutoff date."
+          />
         </div>
       </div>
 
       {/* Middle Row: Draggable Time Window Range Slider */}
-      <div className="relative flex items-center py-1">
+      <div className="relative flex items-center py-1 space-x-2">
         <input
           type="range"
           min={0}
@@ -196,13 +254,19 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({
           onChange={handleSliderChange}
           className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-ew-resize accent-slate-900 hover:accent-slate-800 focus:outline-none"
         />
+        <InfoTooltip
+          title="Timeline Scrubber Slider"
+          description="Drag the slider left or right to scrub through the case timeline dynamically."
+          howToUse="Moving the slider filters the canvas in real-time up to the selected date."
+        />
       </div>
 
-      {/* Bottom Row: Chronological Ticks and Active Evidence Snippet */}
+      {/* Bottom Row: Chronological Ticks */}
       <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1">
         <span>{allDates[0]} (Earliest Date)</span>
         
-        {currentMilestone.evidenceSnippet && (
+        {/* Only show raw snippet text if Story Mode Overlay is OFF */}
+        {!showSubtitles && currentMilestone.evidenceSnippet && (
           <span className="truncate max-w-lg text-slate-600 italic px-2" title={currentMilestone.evidenceSnippet}>
             "{currentMilestone.evidenceSnippet}"
           </span>
@@ -213,3 +277,4 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({
     </div>
   );
 };
+

@@ -7,6 +7,8 @@ import {
   PathHop 
 } from '../types';
 import { findConnectionPath } from '../services/pathService';
+import { InfoTooltip } from './InfoTooltip';
+import { ConfidenceBadge } from './ConfidenceBadge';
 
 interface ExplainConnectionPaneProps {
   entities: Entity[];
@@ -48,7 +50,6 @@ export const ExplainConnectionPane: React.FC<ExplainConnectionPaneProps> = ({
         hops: [],
         pathEntities: [],
         pathRelationships: [],
-        message: 'Select two entities to analyze indirect graph connections.'
       };
     }
     return findConnectionPath(sourceId, targetId, entities, relationships, documents);
@@ -62,9 +63,10 @@ export const ExplainConnectionPane: React.FC<ExplainConnectionPaneProps> = ({
   };
 
   const handleSwap = () => {
-    const prevSource = sourceId;
+    const temp = sourceId;
     setSourceId(targetId);
-    setTargetId(prevSource);
+    setTargetId(temp);
+    setHasSearched(false);
   };
 
   const docMap = useMemo(() => {
@@ -74,16 +76,20 @@ export const ExplainConnectionPane: React.FC<ExplainConnectionPaneProps> = ({
   }, [documents]);
 
   return (
-    <div className="flex flex-col h-full bg-[#f4f1ea] text-[#1c1e22] select-none text-xs font-sans overflow-hidden">
+    <div className="flex flex-col h-full bg-[#f4f1ea] border-l border-[#e0d9cc] text-[#1c1e22] select-none text-xs font-sans overflow-hidden">
       {/* Pane Header */}
-      <div className="p-3.5 border-b border-[#e2dcd0] bg-[#ede8df] flex-shrink-0 space-y-2">
-        <div>
+      <div className="px-3.5 py-3 border-b border-[#e2dcd0] bg-[#ede8df] flex-shrink-0 space-y-2">
+        <div className="flex items-center space-x-1.5">
           <h3 className="text-xs font-bold tracking-wider text-slate-900 uppercase font-sans">
             Explain Connection
           </h3>
-          <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
-            Deterministic shortest-path traversal. Discovers indirect associations across intermediate nodes.
-          </p>
+          <InfoTooltip
+            title="Explain Connection Feature"
+            description="Traces deterministic multi-hop shortest paths between any two entities across intermediate nodes."
+            calculation="Path Support Score = (0.5 * Hop Count Factor + 0.5 * Recency Support) * 100"
+            howToUse="Select a Source Entity and Target Entity to discover direct or indirect relationship paths with verified document evidence."
+            variant="highlight"
+          />
         </div>
 
         {/* Entity Selector Controls */}
