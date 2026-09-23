@@ -205,7 +205,7 @@ ${text}
     });
   } catch (err: any) {
     console.error('Error in /api/extract-entities:', err);
-    res.status(500).json({
+    res.status(503).json({
       error: err.message || 'Failed to extract entities from document'
     });
   }
@@ -373,7 +373,7 @@ ${JSON.stringify(summaryContext, null, 2)}`;
     });
   } catch (err: any) {
     console.error('Error in /api/generate-insights:', err);
-    res.status(500).json({
+    res.status(503).json({
       error: err.message || 'Failed to generate network insights'
     });
   }
@@ -435,7 +435,7 @@ Requirements:
     });
   } catch (err: any) {
     console.error('Error in /api/expand-investigation:', err);
-    res.status(500).json({ error: err.message || 'Failed to generate inquiry expansion' });
+    res.status(503).json({ error: err.message || 'Failed to generate inquiry expansion' });
   }
 });
 
@@ -619,7 +619,7 @@ ${untrustedEvidenceBlock}`;
     });
   } catch (err: any) {
     console.error('Error in /api/copilot:', err);
-    res.status(500).json({ error: err.message || 'Failed to execute Copilot analysis' });
+    res.status(503).json({ error: err.message || 'Failed to execute Copilot analysis' });
   }
 });
 
