@@ -629,6 +629,41 @@ export function validateCopilotResponse(
 }
 
 /**
+ * Determines whether an entity is referenced in a query.
+ * Robust to quotes, nicknames (e.g. Tariq "Raza" Merchant), aliases, and IDs.
+ */
+export function isEntityMentionedInQuery(ent: Entity, query: string): boolean {
+  if (!query || !ent) return false;
+  const qLower = query.toLowerCase().trim();
+  const entIdLower = ent.id.toLowerCase();
+  if (qLower.includes(entIdLower)) return true;
+
+  const normalize = (s: string) => s.toLowerCase().replace(/["'“”`.,\/#!$%\^&\*;:{}=\-_`~()]/g, ' ').replace(/\s+/g, ' ').trim();
+  const qNorm = normalize(query);
+
+  const labelLower = ent.label.toLowerCase();
+  if (qLower.includes(labelLower)) return true;
+
+  const labelNorm = normalize(ent.label);
+  if (labelNorm && qNorm.includes(labelNorm)) return true;
+
+  // Name without nickname in quotes (e.g. "Tariq \"Raza\" Merchant" -> "tariq merchant")
+  const strippedNickname = ent.label.replace(/["'“`][^"'”`]+["'”`]/g, '').replace(/\s+/g, ' ').trim();
+  const strippedNorm = normalize(strippedNickname);
+  if (strippedNorm && strippedNorm.length > 2 && qNorm.includes(strippedNorm)) return true;
+
+  // Check aliases
+  for (const alias of ent.aliases || []) {
+    if (!alias) continue;
+    if (qLower.includes(alias.toLowerCase())) return true;
+    const aliasNorm = normalize(alias);
+    if (aliasNorm && qNorm.includes(aliasNorm)) return true;
+  }
+
+  return false;
+}
+
+/**
  * Builds a deterministic context for the Copilot prompt.
  * Replaces arbitrary slice(0, 45) / slice(0, 60) positional truncations.
  */
@@ -642,16 +677,12 @@ export function buildDeterministicCopilotContext(
 ) {
   const qLower = (query || '').toLowerCase().trim();
 
-  // A. Identify entities explicitly referenced in the query by ID, label, or alias
+  // A. Identify entities explicitly referenced in the query by ID, label, nickname, or alias
   const identifiedEntities: Entity[] = [];
   const identifiedIds = new Set<string>();
 
   entities.forEach(ent => {
-    const idMatch = qLower.includes(ent.id.toLowerCase());
-    const labelMatch = qLower.includes(ent.label.toLowerCase());
-    const aliasMatch = ent.aliases.some(a => qLower.includes(a.toLowerCase()));
-
-    if (idMatch || labelMatch || aliasMatch) {
+    if (isEntityMentionedInQuery(ent, query)) {
       identifiedEntities.push(ent);
       identifiedIds.add(ent.id);
     }

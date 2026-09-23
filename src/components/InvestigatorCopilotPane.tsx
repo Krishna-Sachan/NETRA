@@ -100,24 +100,32 @@ export const InvestigatorCopilotPane: React.FC<InvestigatorCopilotPaneProps> = (
   const suggestedQuestions = React.useMemo(() => {
     const suggestions: string[] = [];
 
+    const formatEntityLabel = (ent: Entity) => {
+      const raw = getDisplayLabel(currentRole, ent);
+      if (raw.includes('"')) {
+        return `"${raw.replace(/"/g, "'")}"`;
+      }
+      return `"${raw}"`;
+    };
+
     if (selectedEntity) {
-      const label = getDisplayLabel(currentRole, selectedEntity);
-      suggestions.push(`Why is "${label}" important in the graph?`);
-      suggestions.push(`Show all events involving "${label}" during March 2026.`);
+      const labelStr = formatEntityLabel(selectedEntity);
+      suggestions.push(`Why is ${labelStr} important in the graph?`);
+      suggestions.push(`Show all events involving ${labelStr} during March 2026.`);
       const otherEnt = entities.find(e => e.id !== selectedEntity.id);
       if (otherEnt) {
-        suggestions.push(`How are "${label}" and "${getDisplayLabel(currentRole, otherEnt)}" connected?`);
+        suggestions.push(`How are ${labelStr} and ${formatEntityLabel(otherEnt)} connected?`);
       }
     } else {
       if (entities.length >= 2) {
-        suggestions.push(`How are "${getDisplayLabel(currentRole, entities[0])}" and "${getDisplayLabel(currentRole, entities[1])}" connected?`);
+        suggestions.push(`How are ${formatEntityLabel(entities[0])} and ${formatEntityLabel(entities[1])} connected?`);
       }
       suggestions.push('What are the key central bridging entities in the case graph?');
       suggestions.push('Show all timeline events recorded during March 2026.');
     }
 
     return suggestions.slice(0, 3);
-  }, [selectedEntity, entities]);
+  }, [selectedEntity, entities, currentRole]);
 
   const handleSendMessage = async (queryText: string) => {
     const trimmed = queryText.trim();

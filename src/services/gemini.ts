@@ -14,7 +14,7 @@ import {
 } from '../types';
 import { SYNTHETIC_PREPARSED_DOCS } from '../data/syntheticFallbacks';
 import { validateExtractionResponse } from '../utils/evidenceValidation';
-import { validateCopilotResponse } from '../utils/copilotValidation';
+import { validateCopilotResponse, isEntityMentionedInQuery } from '../utils/copilotValidation';
 import { findConnectionPath } from './pathService';
 
 /**
@@ -332,13 +332,10 @@ export function generateLocalGroundedCopilotResponse(
     ...relationships.flatMap(r => r.evidence?.map(ev => ev.date) || [])
   ].filter((d): d is string => typeof d === 'string');
 
-  // Find any entities referenced by label or alias in the query
+  // Find any entities referenced by label, alias, nickname, or ID in the query
   const matchedEntities: Entity[] = [];
   entities.forEach(ent => {
-    const labelMatch = qLower.includes(ent.label.toLowerCase());
-    const aliasMatch = ent.aliases.some(a => qLower.includes(a.toLowerCase()));
-    const idMatch = qLower.includes(ent.id.toLowerCase());
-    if (labelMatch || aliasMatch || idMatch) {
+    if (isEntityMentionedInQuery(ent, query)) {
       matchedEntities.push(ent);
     }
   });
