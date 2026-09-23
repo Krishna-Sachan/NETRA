@@ -3,12 +3,12 @@
 # 👁️ NETRA
 ### AI-Powered Criminal Network Intelligence & Link Analysis System
 
-**Developed by Team Complexity Crushers for KAYA Hackathon, IIT BHU**
+**Developed by Team Complexity Crushers for KAYA Hackathon, AZMTH**
 
-[![IIT BHU KAYA Hackathon](https://img.shields.io/badge/Hackathon-KAYA%20IIT%20BHU-orange.svg?style=for-the-badge)](https://iitbhu.ac.in)
+[![AZMTH](https://img.shields.io/badge/Hackathon-KAYA%20IIT%20BHU-orange.svg?style=for-the-badge)](https://iitbhu.ac.in)
 [![Team](https://img.shields.io/badge/Team-Complexity%20Crushers-blue.svg?style=for-the-badge)](#team-complexity-crushers)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg?style=for-the-badge)](LICENSE)
-[![Vercel](https://img.shields.io/badge/Deployment-Vercel%20Ready-black.svg?style=for-the-badge&logo=vercel)](https://vercel.com)
+[![Netlify](https://img.shields.io/badge/Deployment-Vercel%20Ready-black.svg?style=for-the-badge&logo=vercel)](https://vercel.com)
 
 <p align="center">
   <b>Transforming unstructured police dossiers, FIRs, CDRs, and financial logs into explainable, evidence-backed criminal network graphs.</b>
