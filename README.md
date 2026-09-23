@@ -5,7 +5,7 @@
 
 **Evidence-grounded investigative network intelligence for fragmented case records.**
 
-**Developed by Team Complexity Crushers for the KAYA Hackathon, AZMTH**
+**Developed by Team Complexity Crushers for the KAYA Hackathon, IIT (BHU) Varanasi**
 
 [![Hackathon](https://img.shields.io/badge/Hackathon-KAYA%20IIT%20BHU-orange.svg?style=for-the-badge)](https://iitbhu.ac.in)
 [![Team](https://img.shields.io/badge/Team-Complexity%20Crushers-blue.svg?style=for-the-badge)](#team-complexity-crushers)
